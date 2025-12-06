@@ -17,3 +17,9 @@ const secret=config.jwt_secret as string;
 const token= jwt.sign(payload,secret,{ algorithm: 'HS256',expiresIn:'24h' });
 return token;
 }
+
+export const verifyToken=async(token:string)=>{
+    const secret=config.jwt_secret as string;
+    const payload= jwt.verify(token, secret);
+    return payload;
+}

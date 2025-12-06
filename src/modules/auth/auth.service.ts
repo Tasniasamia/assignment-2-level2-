@@ -31,9 +31,9 @@ if(!user){
 }
 const match=matchPassword(user?.password,password);
 if(!match){
-    throw new AppError('Password not matched',401)
+    throw new AppError('Password not matched',400)
 }
-const token=await createToken({name:user?.name,email:user?.email,role:user?.role});
+const token=await createToken({id:user?.id,name:user?.name,email:user?.email,role:user?.role});
 return {
 token:token,
 user:{

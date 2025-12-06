@@ -12,7 +12,7 @@ app.use('/api/v1',route);
 initDB();
 
 app.use('/', (req:Request, res:Response) => {
-  res.json({
+  res.status(404).json({
     success:false,
     message:"Not Found Route",
     path:req.path
