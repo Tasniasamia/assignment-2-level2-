@@ -21,7 +21,7 @@ const createVehicle = async (payload: Record<string, unknown>) => {
         availability_status,
       ]
     );
-    return vehicle.rows[0];
+    return vehicle.rows[0] || null;
   } catch (err: any) {
     throw new AppError(err.message, 500);
   }
@@ -35,7 +35,7 @@ const getVehicle = async (id?: Number | string | any) => {
       return vehicle.rows;
     }
     vehicle = await pool.query(`SELECT * FROM vehicles WHERE id=$1`, [id]);
-    return vehicle.rows[0];
+    return vehicle.rows[0] || null;
   } catch (err: any) {
     throw new AppError(err.message, 500);
   }
@@ -75,10 +75,7 @@ const updateVehicle = async (
         ]
       );
   
-      if (vehicle.rows.length === 0) {
-        return null;
-      }
-    return vehicle.rows[0];
+    return vehicle.rows[0] || null;
   } catch (err: any) {
     throw new AppError(err.message, 500);
   }
@@ -90,10 +87,7 @@ const deleteVehicle=async(id:Number|string|any)=>{
             "DELETE FROM vehicles WHERE id = $1 RETURNING *",
             [id]
           );
-          console.log('vehicle',vehicle)
-          if (vehicle.rowCount === 0) {
-            return null;
-          }
+         
         return vehicle.rowCount;
     }
     catch(err:any){

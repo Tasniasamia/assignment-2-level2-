@@ -15,7 +15,7 @@ const createVehicle = async (req: Request, res: Response) => {
     message: "Vehicle created successfully",
     data: result,
   });
-};
+}
 
 const getVehicle=async(req:Request,res:Response)=>{
     let result;
