@@ -1,0 +1,35 @@
+import { pool } from "../config/db";
+
+const autoReturn = async () => {
+  console.log("Running Auto-Return Job...");
+
+  await pool.query(`
+    UPDATE bookings
+    SET status = 'returned',
+        actual_return_date = rent_end_date,
+        returned_at = NOW()
+    WHERE rent_end_date < CURRENT_DATE
+      AND status = 'active';
+  `);
+
+  await pool.query(`
+    UPDATE vehicles
+    SET availability_status = 'available'
+    WHERE id IN (
+      SELECT vehicle_id FROM bookings
+      WHERE status='returned'
+        AND actual_return_date=CURRENT_DATE
+    );
+  `);
+
+  console.log("Auto-return complete!");
+};
+
+// ALWAYS RUN (every 5 minutes)
+setInterval(async () => {
+  try {
+    await autoReturn();
+  } catch (err) {
+    console.error("AutoReturn Error:", err);
+  }
+}, 1000 * 60 * 5); // 5 minutes

@@ -12,5 +12,7 @@ export const globalErrorHandler = (
   return res.status(statusCode).json({
     success: false,
     message: err.message || "Something went wrong",
+    errors: err.message || "Something went wrong"
+
   });
 };
