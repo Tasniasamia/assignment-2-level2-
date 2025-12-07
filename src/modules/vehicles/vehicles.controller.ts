@@ -45,6 +45,42 @@ const getSingleVehicle=async(req:Request,res:Response)=>{
             data: result,
           });
         }
+
+const updateVehicle=async(req:Request,res:Response)=>{
+  const result=await vehiclesService.updateVehicle(req.body,req.params.vehicleId);
+  if(!result){
+    throw new AppError("Failed to update vehicle", 401);
+
+  }
+  return await sendResponse(res, {
+    success: true,
+    statusCode: 200,
+    message:"Vehicles updated successfully",
+    data: result,
+  });
+
+}
+
+const deleteVehicle = async (req: Request, res: Response) => {
+   if (!req.params.vehicleId) {
+      throw new AppError("vehicleId is required", 400);
+    }
+    const result = await vehiclesService.deleteVehicle(req?.params.vehicleId)
+
+    if (!result) {
+      throw new AppError("Vehicle not found", 404);
+    }
+
+    return await sendResponse(res, {
+      success: true,
+      statusCode: 200,
+      message:"Vehicle deleted successfully",
+    });
+  }
+
+
+
+      
 export const vehiclesController = {
-  createVehicle,getVehicle,getSingleVehicle
+  createVehicle,getVehicle,getSingleVehicle,updateVehicle,deleteVehicle
 };
