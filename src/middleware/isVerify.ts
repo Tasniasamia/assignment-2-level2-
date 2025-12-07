@@ -6,7 +6,6 @@ import { sendResponse } from "../utils/sendResponse";
 
 export const isVerify =  (...roles: string[]) => {
   return async (req: Request, res: Response, next: NextFunction) => {
-    console.log("roles", roles);
     const token = req.headers.authorization?.split(" ")[1];
     const user = (await verifyToken(token as string)) as JwtPayload;
     if (!roles.includes(user?.role)) {

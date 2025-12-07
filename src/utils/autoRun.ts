@@ -1,7 +1,6 @@
 import { pool } from "../config/db";
 
 const autoReturn = async () => {
-  console.log("Running Auto-Return Job...");
 
   await pool.query(`
     UPDATE bookings
@@ -22,14 +21,12 @@ const autoReturn = async () => {
     );
   `);
 
-  console.log("Auto-return complete!");
 };
 
-// ALWAYS RUN (every 5 minutes)
 setInterval(async () => {
   try {
     await autoReturn();
   } catch (err) {
     console.error("AutoReturn Error:", err);
   }
-}, 1000 * 60 * 5); // 5 minutes
+}, 1000 * 60 * 5); 
