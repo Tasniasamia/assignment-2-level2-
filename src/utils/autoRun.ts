@@ -3,9 +3,7 @@ import { pool } from "../config/db";
 const autoReturn = async () => {
   await pool.query(`
     UPDATE bookings
-    SET status = 'returned',
-        actual_return_date = rent_end_date,
-        returned_at = NOW()
+    SET status = 'returned'
     WHERE rent_end_date < CURRENT_DATE
       AND status = 'active';
   `);
@@ -14,9 +12,10 @@ const autoReturn = async () => {
     UPDATE vehicles
     SET availability_status = 'available'
     WHERE id IN (
-      SELECT vehicle_id FROM bookings
-      WHERE status='returned'
-        AND actual_return_date=CURRENT_DATE
+      SELECT vehicle_id 
+      FROM bookings 
+      WHERE status = 'returned'
+        AND rent_end_date < CURRENT_DATE
     );
   `);
 
