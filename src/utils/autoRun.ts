@@ -1,4 +1,3 @@
-import cron from "node-cron";
 import { pool } from "../config/db";
 
 const autoReturn = async () => {
@@ -21,13 +20,7 @@ const autoReturn = async () => {
     );
   `);
 
-  console.log("Auto return job executed at midnight");
+  console.log("Auto return job executed");
 };
 
-cron.schedule("0 0 * * *", async () => {
-  try {
-    await autoReturn();
-  } catch (err) {
-    console.error("AutoReturn Error:", err);
-  }
-});
+export default autoReturn;
