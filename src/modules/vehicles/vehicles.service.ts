@@ -53,7 +53,7 @@ const updateVehicle = async (
       availability_status,
     } = payload;
     const vehicle = await pool.query(
-        `
+      `
         UPDATE vehicles 
         SET 
           vehicle_name = $1,
@@ -64,39 +64,46 @@ const updateVehicle = async (
         WHERE id = $6
         RETURNING *;
         `,
-        [
-          vehicle_name,
-          type,
-          registration_number,
-          daily_rent_price,
-          availability_status,
-          id,
-        ]
-      );
-  
+      [
+        vehicle_name,
+        type,
+        registration_number,
+        daily_rent_price,
+        availability_status,
+        id,
+      ]
+    );
+
     return vehicle.rows[0] || null;
   } catch (err: any) {
     throw new AppError(err.message, 500);
   }
 };
 
-const deleteVehicle=async(id:Number|string|any)=>{
-    try{
-         const vehicle=await pool.query(
-            "DELETE FROM vehicles WHERE id = $1 RETURNING *",
-            [id]
-          );
-         
-        return vehicle.rowCount;
+const deleteVehicle = async (id: Number | string | any) => {
+  try {
+    const activeBookingOfVehicle = await pool.query(
+      `SELECT * FROM vehicles WHERE id=$1 AND availability_status=$2`,
+      [id, "booked"]
+    );
+    if (activeBookingOfVehicle.rows.length > 0) {
+      throw new AppError("Deletion failed: This vehicle currently has an active booking.", 400);
     }
-    catch(err:any){
-        throw new AppError(err.message,500)
-    }
-}
+
+    const vehicle = await pool.query(
+      "DELETE FROM vehicles WHERE id = $1 RETURNING *",
+      [id]
+    );
+
+    return vehicle.rowCount;
+  } catch (err: any) {
+    throw new AppError(err.message, 500);
+  }
+};
 
 export const vehiclesService = {
   createVehicle,
   getVehicle,
   updateVehicle,
-  deleteVehicle
+  deleteVehicle,
 };

@@ -164,6 +164,18 @@ const updateBooking = async (
     if (user?.role === 'admin' && payload.status !== 'returned') {
       throw new AppError("Admin is only allowed to mark the booking as returned", 403);
     }
+    
+    const now=new Date();
+    const start=new Date(findBooking.rows[0].rent_start_date);
+    const end=new Date(findBooking.rows[0].rent_end_date);
+
+    if((now>=start) && (payload.status === 'cancelled')){
+      throw new AppError("Start Date have to greated than now", 400);
+    }
+    if((now>=end) && (payload.status === 'returned')){
+      throw new AppError("End Date have to less than equal now", 400);
+    }
+    
 
     const updated = await pool.query(
       'UPDATE bookings SET status=$1 WHERE id=$2 RETURNING *',
@@ -175,7 +187,8 @@ const updateBooking = async (
       throw new AppError("Failed to update booking", 500);
     }
 
-    if (updatedRow.status === 'cancelled' || updatedRow.status === 'returned') {
+   if ((updatedRow.status === 'cancelled') || updatedRow.status === 'returned') {
+       
        updateVehicle= await pool.query(
         "UPDATE vehicles SET availability_status='available' WHERE id=$1 RETURNING *",
         [updatedRow.vehicle_id]
