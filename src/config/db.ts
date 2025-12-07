@@ -26,8 +26,8 @@ const initDB = async () => {
 
       CREATE TABLE IF NOT EXISTS bookings (
           id SERIAL PRIMARY KEY,
-          customer_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-          vehicle_id INT NOT NULL REFERENCES vehicles(id) ON DELETE CASCADE,
+          customer_id INT NOT NULL REFERENCES users(id) ON DELETE RESTRICT,
+          vehicle_id INT NOT NULL REFERENCES vehicles(id) ON DELETE RESTRICT,
           rent_start_date DATE NOT NULL,
           rent_end_date DATE NOT NULL,
           total_price NUMERIC(10,2) NOT NULL CHECK (total_price > 0),

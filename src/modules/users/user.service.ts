@@ -9,7 +9,7 @@ const updateUser = async (
   id: string | number
 ) => {
   const { name, email, phone, role } = payload;
-  
+
   const findUser = await pool.query("SELECT * FROM users WHERE id=$1", [id]);
   const dbUser = findUser.rows[0];
 
@@ -48,26 +48,33 @@ const updateUser = async (
   return null;
 };
 
-const getUsers=async()=>{
-    const users = await pool.query("SELECT id,name,email,phone,role FROM users");
-    return users.rows;
-}
+const getUsers = async () => {
+  const users = await pool.query("SELECT id,name,email,phone,role FROM users");
+  return users.rows;
+};
 
-const deleteUser=async(id:Number|string|any)=>{
-    try{
-         const user=await pool.query(
-            "DELETE FROM users WHERE id = $1 RETURNING *",
-            [id]
-          );
-         
-        return user.rowCount;
-    }
-    catch(err:any){
-        throw new AppError(err.message,500)
-    }
-}
+const deleteUser = async (id: Number | string | any) => {
+  try {
+    const activeBookingOfUser = await pool.query(
+      `SELECT * FROM bookings WHERE customer_id=$1 AND status=$2`, 
+      [id, "active"]
+    );
+   if(activeBookingOfUser.rows.length>0){
+    throw new AppError('Cannot Delete User , Already booking exists',400)
+   }
+    const user = await pool.query(
+      "DELETE FROM users WHERE id = $1 RETURNING *",
+      [id]
+    );
 
+    return user.rowCount;
+  } catch (err: any) {
+    throw new AppError(err.message, 500);
+  }
+}
 
 export const userService = {
-  updateUser,getUsers,deleteUser
+  updateUser,
+  getUsers,
+  deleteUser,
 };
